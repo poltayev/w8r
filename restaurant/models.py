@@ -1,47 +1,54 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.utils.text import slugify
 
-# Create your models here.
-class BaseModel(models.Model):
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-
-class Restaurant(BaseModel):
+class Restaurant(models.Model):
     name = models.CharField(max_length=50)
     description = models.CharField(max_length=250)
     logo_path = models.CharField(max_length=250)
     is_deleted = models.SmallIntegerField(default=0)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
-class Branch(BaseModel):
+class Branch(models.Model):
     restaurant_id = models.ForeignKey(Restaurant, on_delete=models.CASCADE)
     city = models.CharField(max_length=50)
     address = models.CharField(max_length=250)
     is_deleted = models.SmallIntegerField(default=0)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
-class Waiter(BaseModel):
+class Waiter(models.Model):
     name = models.CharField(max_length=50)
     surname = models.CharField(max_length=50)
     branch_id = models.ForeignKey(Branch, on_delete=models.CASCADE)
     email = models.EmailField(unique=True)
     phone = models.CharField(max_length=255)
     is_deleted = models.SmallIntegerField(default=0)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
-class Table(BaseModel):
+class Table(models.Model):
     table_number = models.IntegerField()
     branch_id = models.ForeignKey(Branch, on_delete=models.CASCADE)
     is_reserved = models.SmallIntegerField(default=0)
     reserved_id = models.CharField(max_length=30)
     updated_by = models.IntegerField()
     is_deleted = models.SmallIntegerField(default=0)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
-class Menu(BaseModel):
+class Menu(models.Model):
     name = models.CharField(max_length=250)
     branch_id = models.ForeignKey(Branch, on_delete=models.CASCADE)
     is_deleted = models.SmallIntegerField(default=0)
     updated_by = models.IntegerField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
-class MenuPosition(BaseModel):
+class MenuPosition(models.Model):
     name = models.CharField(max_length=50)
+    slug = models.SlugField(default=slugify(name))
     description = models.CharField(max_length=250)
     menu_id = models.ForeignKey(Menu, on_delete=models.PROTECT)
     price = models.DecimalField(max_digits=9, decimal_places=2)
@@ -49,17 +56,21 @@ class MenuPosition(BaseModel):
     is_available = models.SmallIntegerField(default=0)
     is_deleted = models.SmallIntegerField(default=0)
     updated_by = models.IntegerField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
 class Ingredient(models.Model):
     name = models.CharField(max_length=250)
     type = models.CharField(max_length=50)
     description = models.CharField(max_length=250)
 
-class BranchIngredients(BaseModel):
+class BranchIngredients(models.Model):
     menu_positions = models.ManyToManyField(MenuPosition)
     ingredient = models.ForeignKey(Ingredient, on_delete=models.PROTECT)
     is_available = models.SmallIntegerField(default=1)
     is_deleted = models.SmallIntegerField(default=0)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
 class PaymentType(models.Model):
     name = models.CharField(max_length=50)
@@ -73,7 +84,7 @@ class OrderStatus(models.Model):
     description = models.CharField(max_length=250)
     is_deleted = models.SmallIntegerField(default=0)
 
-class Order(BaseModel):
+class Order(models.Model):
     NEW = 'new'
 
     branch_id = models.ForeignKey(Branch, on_delete=models.PROTECT)
@@ -84,8 +95,10 @@ class Order(BaseModel):
     price = models.DecimalField(max_digits=9, decimal_places=2)
     payment_type = models.ForeignKey(PaymentType, on_delete=models.PROTECT)
     status = models.ForeignKey(OrderStatus, on_delete=models.PROTECT)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
-class OrderItem(BaseModel):
+class OrderItem(models.Model):
     order_id = models.ForeignKey(Order, on_delete=models.PROTECT)
     menu_position_id = models.ForeignKey(MenuPosition, on_delete=models.PROTECT)
     unit_price = models.DecimalField(max_digits=9, decimal_places=2)
@@ -93,6 +106,8 @@ class OrderItem(BaseModel):
     total_unit_price = models.DecimalField(max_digits=9, decimal_places=2)
     is_available = models.SmallIntegerField(default=0)
     is_deleted = models.SmallIntegerField(default=0)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
 
 
