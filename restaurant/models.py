@@ -18,11 +18,6 @@ class Branch(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
-    class Meta:
-        indexes = [
-            models.Index(fields=['restaurant_id'])
-        ]
-
 class Waiter(models.Model):
     name = models.CharField(max_length=50)
     surname = models.CharField(max_length=50)
@@ -32,11 +27,6 @@ class Waiter(models.Model):
     is_deleted = models.SmallIntegerField(default=0)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-
-    class Meta:
-        indexes = [
-            models.Index(fields=['branch_id'])
-        ]
 
 class Table(models.Model):
     table_number = models.IntegerField()
@@ -48,11 +38,6 @@ class Table(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
-    class Meta:
-        indexes = [
-            models.Index(fields=['branch_id'])
-        ]
-
 class Menu(models.Model):
     name = models.CharField(max_length=250)
     branch_id = models.ForeignKey(Branch, on_delete=models.CASCADE)
@@ -60,11 +45,6 @@ class Menu(models.Model):
     updated_by = models.IntegerField()
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-
-    class Meta:
-        indexes = [
-            models.Index(fields=['branch_id'])
-        ]
 
 class MenuPosition(models.Model):
     name = models.CharField(max_length=50)
@@ -79,11 +59,6 @@ class MenuPosition(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
-    class Meta:
-        indexes = [
-            models.Index(fields=['menu_id'])
-        ]
-
 class Ingredient(models.Model):
     name = models.CharField(max_length=250)
     type = models.CharField(max_length=50)
@@ -96,11 +71,6 @@ class BranchIngredient(models.Model):
     is_deleted = models.SmallIntegerField(default=0)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-
-    class Meta:
-        indexes = [
-            models.Index(fields=['ingredient_id'])
-        ]
 
 class PaymentType(models.Model):
     name = models.CharField(max_length=50)
@@ -128,11 +98,6 @@ class Order(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
-    class Meta:
-        indexes = [
-            models.Index(fields=['branch_id'])
-        ]
-
 class OrderItem(models.Model):
     order_id = models.ForeignKey(Order, on_delete=models.PROTECT)
     menu_position_id = models.ForeignKey(MenuPosition, on_delete=models.PROTECT)
@@ -143,12 +108,6 @@ class OrderItem(models.Model):
     is_deleted = models.SmallIntegerField(default=0)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-
-    class Meta:
-        indexes = [
-            models.Index(fields=['order_id'])
-        ]
-
 
 
 
