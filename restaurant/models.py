@@ -10,8 +10,14 @@ class Restaurant(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        ordering = ['name']
+
 class Branch(models.Model):
-    restaurant_id = models.ForeignKey(Restaurant, on_delete=models.CASCADE)
+    restaurant = models.ForeignKey(Restaurant, on_delete=models.CASCADE)
     city = models.CharField(max_length=50)
     address = models.CharField(max_length=250)
     is_deleted = models.SmallIntegerField(default=0)
@@ -21,36 +27,48 @@ class Branch(models.Model):
 class Waiter(models.Model):
     name = models.CharField(max_length=50)
     surname = models.CharField(max_length=50)
-    branch_id = models.ForeignKey(Branch, on_delete=models.CASCADE)
+    branch = models.ForeignKey(Branch, on_delete=models.CASCADE)
     email = models.EmailField(unique=True)
     phone = models.CharField(max_length=255)
     is_deleted = models.SmallIntegerField(default=0)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
+    def __str__(self):
+        return f'{self.name} {self.surname}'
+
+    class Meta:
+        ordering = ['surname']
+
 class Table(models.Model):
     table_number = models.IntegerField()
-    branch_id = models.ForeignKey(Branch, on_delete=models.CASCADE)
+    branch = models.ForeignKey(Branch, on_delete=models.CASCADE)
     is_reserved = models.SmallIntegerField(default=0)
-    reserved_id = models.CharField(max_length=30)
+    reserved = models.CharField(max_length=30)
     updated_by = models.IntegerField()
     is_deleted = models.SmallIntegerField(default=0)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
+    def __str__(self):
+        return self.table_number
+
 class Menu(models.Model):
     name = models.CharField(max_length=250)
-    branch_id = models.ForeignKey(Branch, on_delete=models.CASCADE)
+    branch = models.ForeignKey(Branch, on_delete=models.CASCADE)
     is_deleted = models.SmallIntegerField(default=0)
     updated_by = models.IntegerField()
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.name
 
 class MenuPosition(models.Model):
     name = models.CharField(max_length=50)
     slug = models.SlugField(default=slugify(name))
     description = models.CharField(max_length=250)
-    menu_id = models.ForeignKey(Menu, on_delete=models.PROTECT)
+    menu = models.ForeignKey(Menu, on_delete=models.PROTECT)
     price = models.DecimalField(max_digits=9, decimal_places=2)
     discount = models.DecimalField(max_digits=9, decimal_places=2)
     is_available = models.SmallIntegerField(default=0)
@@ -59,6 +77,9 @@ class MenuPosition(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
+    def __str__(self):
+        return self.name
+
 class Ingredient(models.Model):
     name = models.CharField(max_length=250)
     type = models.CharField(max_length=50)
@@ -66,7 +87,7 @@ class Ingredient(models.Model):
 
 class BranchIngredient(models.Model):
     menu_positions = models.ManyToManyField(MenuPosition)
-    ingredient_id = models.ForeignKey(Ingredient, on_delete=models.PROTECT)
+    ingredient = models.ForeignKey(Ingredient, on_delete=models.PROTECT)
     is_available = models.SmallIntegerField(default=1)
     is_deleted = models.SmallIntegerField(default=0)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -87,11 +108,11 @@ class OrderStatus(models.Model):
 class Order(models.Model):
     NEW = 'new'
 
-    branch_id = models.ForeignKey(Branch, on_delete=models.PROTECT)
-    restaurant_id = models.ForeignKey(Restaurant, on_delete=models.PROTECT)
-    table_id = models.ForeignKey(Table, on_delete=models.PROTECT)
-    user_id = models.ForeignKey(User, on_delete=models.PROTECT)
-    waiter_id = models.ForeignKey(Waiter, on_delete=models.PROTECT)
+    branch = models.ForeignKey(Branch, on_delete=models.PROTECT)
+    restaurant = models.ForeignKey(Restaurant, on_delete=models.PROTECT)
+    table = models.ForeignKey(Table, on_delete=models.PROTECT)
+    user = models.ForeignKey(User, on_delete=models.PROTECT)
+    waiter = models.ForeignKey(Waiter, on_delete=models.PROTECT)
     price = models.DecimalField(max_digits=9, decimal_places=2)
     payment_type = models.ForeignKey(PaymentType, on_delete=models.PROTECT)
     status = models.ForeignKey(OrderStatus, on_delete=models.PROTECT)
@@ -99,8 +120,8 @@ class Order(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
 class OrderItem(models.Model):
-    order_id = models.ForeignKey(Order, on_delete=models.PROTECT)
-    menu_position_id = models.ForeignKey(MenuPosition, on_delete=models.PROTECT)
+    order = models.ForeignKey(Order, on_delete=models.PROTECT)
+    menu_position = models.ForeignKey(MenuPosition, on_delete=models.PROTECT)
     unit_price = models.DecimalField(max_digits=9, decimal_places=2)
     unit_discount = models.DecimalField(max_digits=9, decimal_places=2)
     total_unit_price = models.DecimalField(max_digits=9, decimal_places=2)
