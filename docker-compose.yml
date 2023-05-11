@@ -16,6 +16,7 @@ services:
       - .:/code
     ports:
       - "8000:8000"
+      - "3000:3000"
     environment:
       - POSTGRES_NAME=${POSTGRES_DB}
       - POSTGRES_USER=${POSTGRES_USER}
