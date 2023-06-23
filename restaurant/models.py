@@ -1,11 +1,12 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils.text import slugify
+from django.utils.html import mark_safe
 
 class Restaurant(models.Model):
     name = models.CharField(max_length=50)
     description = models.CharField(max_length=250)
-    logo_path = models.CharField(max_length=250)
+    logo = models.ImageField(upload_to='images/logos/', default=None)
     is_deleted = models.SmallIntegerField(default=0)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -13,6 +14,11 @@ class Restaurant(models.Model):
     def __str__(self):
         return self.name
 
+    def image_tag(self):
+        return mark_safe(f'<img src="{self.logo.url}" width="150"/>')
+
+    image_tag.short_description = 'Image preview'
+    
     class Meta:
         ordering = ['name']
 
@@ -23,6 +29,12 @@ class Branch(models.Model):
     is_deleted = models.SmallIntegerField(default=0)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.address
+
+    class Meta:
+        ordering = ['restaurant']
 
 class Waiter(models.Model):
     name = models.CharField(max_length=50)
@@ -53,7 +65,7 @@ class Table(models.Model):
     def __str__(self):
         return self.table_number
 
-class Menu(models.Model):
+class MenuCategory(models.Model):
     name = models.CharField(max_length=250)
     branch = models.ForeignKey(Branch, on_delete=models.CASCADE)
     is_deleted = models.SmallIntegerField(default=0)
@@ -64,13 +76,18 @@ class Menu(models.Model):
     def __str__(self):
         return self.name
 
+    class Meta:
+        verbose_name_plural = "Menu categories"
+
 class MenuPosition(models.Model):
     name = models.CharField(max_length=50)
     slug = models.SlugField(default=slugify(name))
-    description = models.CharField(max_length=250)
-    menu = models.ForeignKey(Menu, on_delete=models.PROTECT)
+    description = models.CharField(max_length=500)
+    menu_category = models.ForeignKey(MenuCategory, on_delete=models.PROTECT)
     price = models.DecimalField(max_digits=9, decimal_places=2)
     discount = models.DecimalField(max_digits=9, decimal_places=2)
+    weight = models.DecimalField(max_digits=9, decimal_places=2)
+    weight_unit = models.CharField(max_length=10)
     is_available = models.SmallIntegerField(default=0)
     is_deleted = models.SmallIntegerField(default=0)
     updated_by = models.IntegerField()

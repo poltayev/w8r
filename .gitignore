@@ -11,3 +11,4 @@ venv/
 .env
 db.sqlite3
 launch.json
+media/
